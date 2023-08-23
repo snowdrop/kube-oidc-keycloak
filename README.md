@@ -5,7 +5,19 @@ using OIDC with a Keycloak OIDC provider.
 
 The setup is not so complex, but it requires nevertheless to perform different steps such as:
 - Generate a ROOT Ca certificate and key. This is needed to configure properly the ApiServer and Keycloak too
-- Patch the `kubeadmConfigPatches` of kind config to specify the OIDC extra args
+- Patch the `kubeadmConfigPatches` of kind config to specify the OIDC extra args:
+  ```
+  kind: ClusterConfiguration
+    apiServer:
+      extraArgs:
+        oidc-client-id: kube
+        oidc-issuer-url: https://$KEYCLOAK_HOSTNAME/realms/master
+        oidc-username-claim: email
+        oidc-groups-claim: groups
+        oidc-ca-file: /etc/ca-certificates/keycloak/root-ca.pem
+  ```
+- Mount the CA certificate generated as `extraMounts` parameter to the kind config
+- Create the kind cluster
 - Install the certificate manager to generate OOTB for the keycloak ingress host the secret (using the root CA) to access the TLS endpoint
 - Install keycloak with a Postgresql DB and expose it as an ingress host: `https://keycloak.127.0.0.1.nip.io` 
 - Create a `kube` oidc client and set the client_id: kube and secret_id: kube-client-secret
