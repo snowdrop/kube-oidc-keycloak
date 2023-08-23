@@ -1,4 +1,4 @@
-# Project to test OIDC & SSO
+# Project to play with OIDC & SSO on kubernetes
 
 A demo project to test how to configure a kubernetes cluster to [authenticate](https://kubernetes.io/docs/reference/access-authn-authz/authentication/#openid-connect-tokens) the users accessing the platform
 using OIDC with a Keycloak OIDC provider.
