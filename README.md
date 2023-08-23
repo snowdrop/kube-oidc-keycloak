@@ -17,6 +17,7 @@ The setup is not so complex, but it requires nevertheless to perform different s
     "kube-admin"
   ],
   ```
+- Set for each user the OIDC auth provider credentials using the command: `kubectl config set-credentials user-dev --auth-provider=oidc ...`  
 
 To play the scenario using kind + keycloak and configure them, execute the following script: `./scripts/kind-oidc-keycloak.sh`
 
