@@ -1,0 +1,10 @@
+/.terraform.lock.hcl
+/keycloak.tf
+/keycloak.tf.bak
+/kube-config-credentials.sh
+/kube-config-credentials.sh.bak
+/terraform.tfstate
+/.terraform/
+/.ssl/
+
+/.idea/
