@@ -7,7 +7,9 @@ The setup is not so complex, but it requires nevertheless to perform different s
 - Generate a ROOT Ca certificate and key. This is needed to configure properly the ApiServer and Keycloak too
 - Patch the `kubeadmConfigPatches` of kind config to specify the OIDC extra args
 - Install the certificate manager to generate OOTB for the keycloak ingress host the secret (using the root CA) to access the TLS endpoint
-- Install keycloak and create some users: user-dev, user-admin and groups: kube-dev, kube-admin
+- Install keycloak with a Postgresql DB and expose it as an ingress host: `https://keycloak.127.0.0.1.nip.io` 
+- Create a `kube` oidc client and set the client_id and secret_id
+- Add some users: user-dev, user-admin and groups: kube-dev, kube-admin
 - Create some clusterRoles (kube-admin, kube-dev) having different RBAC: Cluster admin, edit, etc
 - Assign a user to a keycloak group (e.g user-dev -> group: kube-dev). Such a mapping will allow in fact with the `id_token` returned as JWT from keycloak to get the group to which a user authenticated belongs:
   ```yaml
