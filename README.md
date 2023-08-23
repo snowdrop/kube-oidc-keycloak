@@ -20,14 +20,15 @@ The setup is not so complex, but it requires nevertheless to perform different s
 
 To play the scenario using kind + keycloak and configure them, execute the following script: `./scripts/kind-oidc-keycloak.sh`
 
-***REMOVED******REMOVED*** References
+***REMOVED******REMOVED*** Some useful References
 
-https://blogs.sap.com/2022/09/23/using-github-actions-openid-connect-in-kubernetes/
-https://dev.to/nuculabs_dev/kubernetes-openid-connect-integration-with-resource-owner-flow-ban
-https://kubernetes.io/docs/reference/access-authn-authz/authentication/***REMOVED***openid-connect-tokens
-https://access.redhat.com/documentation/en-us/red_hat_codeready_workspaces/2.7/html/administration_guide/managing-identities-and-authorizations_crw***REMOVED***obtaining-the-token-from-openshift-token-through-keycloak_crw
-https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect
+- https://blogs.sap.com/2022/09/23/using-github-actions-openid-connect-in-kubernetes/
+- https://dev.to/nuculabs_dev/kubernetes-openid-connect-integration-with-resource-owner-flow-ban
+- https://kubernetes.io/docs/reference/access-authn-authz/authentication/***REMOVED***openid-connect-tokens
+- https://access.redhat.com/documentation/en-us/red_hat_codeready_workspaces/2.7/html/administration_guide/managing-identities-and-authorizations_crw***REMOVED***obtaining-the-token-from-openshift-token-through-keycloak_crw
+- https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect
 
 Kind OIDC + Keycloak
-https://medium.com/@charled.breteche/kind-keycloak-securing-kubernetes-api-server-with-oidc-371c5faef902
-https://faun.pub/kubernetes-auth-e2f342a5f269
+
+- https://medium.com/@charled.breteche/kind-keycloak-securing-kubernetes-api-server-with-oidc-371c5faef902
+- https://faun.pub/kubernetes-auth-e2f342a5f269
