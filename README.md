@@ -1,11 +1,11 @@
 ***REMOVED*** Project to test OIDC & SSO
 
 A demo project to test how to configure a kubernetes cluster to [authenticate](https://kubernetes.io/docs/reference/access-authn-authz/authentication/***REMOVED***openid-connect-tokens) the users accessing the platform
-using its OIDC client with a Keycloak OIDC provider.
+using OIDC with a Keycloak OIDC provider.
 
-The setup is not so complex, but it requires nevertheless to perfrom different steps such as:
-- Generate a ROOT Ca certificate and key
-- Patch the kubeadmConfigPatches of kind config to specify the OIDC extra args
+The setup is not so complex, but it requires nevertheless to perform different steps such as:
+- Generate a ROOT Ca certificate and key. This is needed to configure properly the ApiServer and Keycloak too
+- Patch the `kubeadmConfigPatches` of kind config to specify the OIDC extra args
 - Install the certificate manager to generate OOTB for the keycloak ingress host the secret (using the root CA) to access the TLS endpoint
 - Install keycloak and create some users: user-dev, user-admin and groups: kube-dev, kube-admin
 - Create some clusterRoles (kube-admin, kube-dev) having different RBAC: Cluster admin, edit, etc
