@@ -31,7 +31,8 @@ The setup is not so complex, but it requires nevertheless to perform different s
     "kube-admin"
   ],
   ```
-- Set for each user the OIDC auth provider credentials using the command: `kubectl config set-credentials user-dev --auth-provider=oidc ...`  
+- Set for each user the OIDC auth provider credentials using the command: `kubectl config set-credentials user-dev --auth-provider=oidc ...` 
+- Select one of the user and try to create different resources: `kubectl config use-context user-dev; kubectl create ns test`
 
 To play the scenario using kind + keycloak and configure them, execute the following script: `./scripts/kind-oidc-keycloak.sh`
 
