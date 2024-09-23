@@ -1,90 +1,90 @@
-***REMOVED***
-***REMOVED***
-USERNAME="***REMOVED***"
-PASSWORD="***REMOVED***"
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
+CLIENT_ID="391f1c4c-fe45-4935-bcee-667b075a9962"
+CLIENT_SECRET="TJPLoD4l3GaWdTx3PTbx1DlvvqG4dClG"
+USERNAME="<kerberos_username>"
+PASSWORD="<kerberos_password>"
+TOKEN_URL="https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token"
+INFO_URL="https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/userinfo"
+OIDC_URL="https://sso.redhat.com/auth/realms/redhat-external"
+SCOPE="openid"
+OIDC_NAME="oidc_test"
 
-***REMOVED***
+OCP_API_SERVER="https://api-toolchain-host-operator.apps.stone-prd-host1.wdlc.p1.openshiftapps.com"
 
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
+# Test: Getting the OIDC token using the clientId/secretId BUT we should look to the id_token !
+# echo "curl -s -X POST $TOKEN_URL \
+#         -H Content-Type: application/x-www-form-urlencoded \
+#         -d grant_type=client_credentials \
+#         -d client_id=$CLIENT_ID \
+#         -d client_secret=$CLIENT_SECRET \
+#         -d scope=$SCOPE"
 
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
+response=$(curl -s -X POST "$TOKEN_URL" \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "grant_type=client_credentials" \
+  -d "client_id=$CLIENT_ID" \
+  -d "client_secret=$CLIENT_SECRET" \
+  -d "scope=$SCOPE")
 
-***REMOVED***
-***REMOVED***
-***REMOVED***
+# Parse the response to get the access token
+ACCESS_TOKEN=$(echo "$response" | jq -r '.access_token')
+ID_TOKEN=$(echo "$response" | jq -r '.id_token')
 
-***REMOVED***
-***REMOVED***
-***REMOVED***
+#echo "Response: $(echo $response | jq -r .)"
+echo "#### Access token decoded: $(jq -R 'split(".") | .[1] | @base64d | fromjson' <<< $ACCESS_TOKEN)"
+echo "#### Id token decoded: $(jq -R 'split(".") | .[1] | @base64d | fromjson' <<< $ID_TOKEN)"
 
-***REMOVED*** ***REMOVED***
-***REMOVED*** ***REMOVED***
-***REMOVED*** ***REMOVED***
-***REMOVED*** ***REMOVED***
-***REMOVED*** ***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED*** ***REMOVED*** Trying to get a refresh token ..."
-***REMOVED*** echo "$response" | jq -r '.'
+# response=$(curl -s -X POST "$TOKEN_URL" \
+#   -H "Content-Type: application/x-www-form-urlencoded" \
+#   -d "grant_type=client_credentials" \
+#   -d "client_id=$CLIENT_ID" \
+#   -d "client_secret=$CLIENT_SECRET" \
+#   -d "scope=$SCOPE" \
+#   -d response_type="refresh_token")
+#
+# # Trying to get a refresh token ..."
+# echo "$response" | jq -r '.'
 
-***REMOVED*** Trying to set the credentials
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-   ***REMOVED***--auth-provider-arg=refresh-token= \
-   ***REMOVED***--auth-provider-arg=idp-certificate-authority=( path to your ca certificate )
+# Trying to set the credentials
+kubectl config set-credentials $OIDC_NAME \
+   --auth-provider=oidc \
+   --auth-provider-arg=idp-issuer-url=$OIDC_URL \
+   --auth-provider-arg=client-id=$CLIENT_ID \
+   --auth-provider-arg=client-secret=$CLIENT_SECRET \
+   --auth-provider-arg=id-token=$ID_TOKEN
+   #--auth-provider-arg=refresh-token= \
+   #--auth-provider-arg=idp-certificate-authority=( path to your ca certificate )
 
-***REMOVED*** Test 1: Get OIDC Token
+# Test 1: Get OIDC Token
 
-***REMOVED*** Response: {
-  ***REMOVED***  "error": "unauthorized_client",
-  ***REMOVED***  "error_description": "Client not allowed for direct access grants"
-  ***REMOVED***}
+# Response: {
+  #  "error": "unauthorized_client",
+  #  "error_description": "Client not allowed for direct access grants"
+  #}
 
-***REMOVED*** ***REMOVED***
-***REMOVED*** ***REMOVED***
-***REMOVED***   -d "grant_type=password" \
-***REMOVED*** ***REMOVED***
-***REMOVED*** ***REMOVED***
-***REMOVED***   -d "username=$USERNAME" \
-***REMOVED***   -d "password=$PASSWORD" \
-***REMOVED*** ***REMOVED***
+# response=$(curl -s -X POST "$TOKEN_URL" \
+#   -H "Content-Type: application/x-www-form-urlencoded" \
+#   -d "grant_type=password" \
+#   -d "client_id=$CLIENT_ID" \
+#   -d "client_secret=$CLIENT_SECRET" \
+#   -d "username=$USERNAME" \
+#   -d "password=$PASSWORD" \
+#   -d "scope=$SCOPE")
 
-***REMOVED*** Test: Request OIDC Token using the Bearer Token
-***REMOVED*** ***REMOVED***
-***REMOVED*** ***REMOVED***
-***REMOVED***   -d "grant_type=urn:ietf:params:oauth:grant-type:token-exchange" \
-***REMOVED*** ***REMOVED***
-***REMOVED*** ***REMOVED***
-***REMOVED***   -d "subject_token=$ACCESS_TOKEN" \
-***REMOVED***   -d "subject_token_type=urn:ietf:params:oauth:token-type:access_token")
-***REMOVED***
-***REMOVED*** ***REMOVED*** Parse the response to extract the OIDC token
-***REMOVED*** echo "***REMOVED******REMOVED******REMOVED******REMOVED*** Response about request to get the OIDC token: "
-***REMOVED*** ***REMOVED***echo $response | jq -r '.'
-***REMOVED*** OIDC_TOKEN=$(echo $response | jq -r '.access_token')
-***REMOVED*** echo "OIDC Token: $OIDC_TOKEN"
-***REMOVED*** echo "ID TOKEN decoded: $(jq -R 'split(".") | .[1] | @base64d | fromjson' <<< $ID_TOKEN)"
-***REMOVED*** Calling the API server
-***REMOVED*** echo "***REMOVED******REMOVED******REMOVED******REMOVED*** Response about request to get the OIDC token: "
-***REMOVED*** curl -H "Authorization: Bearer $ACCESS_TOKEN" $OCP_API_SERVER/api/accounts_mgmt/v1/current_account
+# Test: Request OIDC Token using the Bearer Token
+# response=$(curl -s -X POST "$TOKEN_URL" \
+#   -H "Content-Type: application/x-www-form-urlencoded" \
+#   -d "grant_type=urn:ietf:params:oauth:grant-type:token-exchange" \
+#   -d "client_id=$CLIENT_ID" \
+#   -d "client_secret=$CLIENT_SECRET" \
+#   -d "subject_token=$ACCESS_TOKEN" \
+#   -d "subject_token_type=urn:ietf:params:oauth:token-type:access_token")
+#
+# # Parse the response to extract the OIDC token
+# echo "#### Response about request to get the OIDC token: "
+# #echo $response | jq -r '.'
+# OIDC_TOKEN=$(echo $response | jq -r '.access_token')
+# echo "OIDC Token: $OIDC_TOKEN"
+# echo "ID TOKEN decoded: $(jq -R 'split(".") | .[1] | @base64d | fromjson' <<< $ID_TOKEN)"
+# Calling the API server
+# echo "#### Response about request to get the OIDC token: "
+# curl -H "Authorization: Bearer $ACCESS_TOKEN" $OCP_API_SERVER/api/accounts_mgmt/v1/current_account

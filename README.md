@@ -1,6 +1,6 @@
-***REMOVED*** Project to play with OIDC & SSO on kubernetes
+# Project to play with OIDC & SSO on kubernetes
 
-A demo project to test how to configure a kubernetes cluster to [authenticate](https://kubernetes.io/docs/reference/access-authn-authz/authentication/***REMOVED***openid-connect-tokens) the users accessing the platform
+A demo project to test how to configure a kubernetes cluster to [authenticate](https://kubernetes.io/docs/reference/access-authn-authz/authentication/#openid-connect-tokens) the users accessing the platform
 using OIDC with a Keycloak OIDC provider.
 
 The setup is not so complex, but it requires nevertheless to perform different steps such as:
@@ -25,7 +25,7 @@ The setup is not so complex, but it requires nevertheless to perform different s
 - Create on the cluster some clusterRoles: kube-admin, kube-dev having different RBAC: Cluster admin, edit, etc
 - Assign a user to a keycloak group (e.g user-dev -> group: kube-dev). Such a mapping will allow in fact with the `id_token` returned as JWT from keycloak to get the group to which a user authenticated belongs:
   ```yaml
-  ***REMOVED*** JWT Snippet from of the "user-admin" id_token
+  # JWT Snippet from of the "user-admin" id_token
   "email": "user-admin@domain.com"
   "groups": [
     "kube-admin"
@@ -36,12 +36,12 @@ The setup is not so complex, but it requires nevertheless to perform different s
 
 To play the scenario using kind + keycloak and configure them, execute the following script: `./scripts/kind-oidc-keycloak.sh`
 
-***REMOVED******REMOVED*** Some useful References
+## Some useful References
 
 - https://blogs.sap.com/2022/09/23/using-github-actions-openid-connect-in-kubernetes/
 - https://dev.to/nuculabs_dev/kubernetes-openid-connect-integration-with-resource-owner-flow-ban
-- https://kubernetes.io/docs/reference/access-authn-authz/authentication/***REMOVED***openid-connect-tokens
-- https://access.redhat.com/documentation/en-us/red_hat_codeready_workspaces/2.7/html/administration_guide/managing-identities-and-authorizations_crw***REMOVED***obtaining-the-token-from-openshift-token-through-keycloak_crw
+- https://kubernetes.io/docs/reference/access-authn-authz/authentication/#openid-connect-tokens
+- https://access.redhat.com/documentation/en-us/red_hat_codeready_workspaces/2.7/html/administration_guide/managing-identities-and-authorizations_crw#obtaining-the-token-from-openshift-token-through-keycloak_crw
 - https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect
 
 Kind OIDC + Keycloak

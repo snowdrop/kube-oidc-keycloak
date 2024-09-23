@@ -4,25 +4,25 @@ KEYCLOAK_HOSTNAME=keycloak.127.0.0.1.nip.io
 TEMP_SSL_DIR=".ssl"
 CLUSTER_NAME="kind"
 
-echo "***REMOVED*** do some clean up"
+echo "# do some clean up"
 rm -rf ${TEMP_SSL_DIR}
 rm -rf .terraform
 rm -rf {.*.hcl,*.hcl,*.tf,*.tf.bak,*.sh.bak,kube-config-credentials.sh,terraform.*}
 
-echo "***REMOVED*** create a folder to store certificates"
+echo "# create a folder to store certificates"
 mkdir -p ${TEMP_SSL_DIR}
 
-echo "***REMOVED*** generate an rsa key"
+echo "# generate an rsa key"
 openssl genrsa -out .ssl/root-ca-key.pem 2048
 
-echo "***REMOVED*** generate root certificate"
+echo "# generate root certificate"
 openssl req -x509 -new -nodes -key .ssl/root-ca-key.pem \
   -days 3650 -sha256 -out .ssl/root-ca.pem -subj "/CN=kube-ca"
 
 if kind get clusters | grep -q "$CLUSTER_NAME"; then
   echo "Kind cluster $CLUSTER_NAME exists. Deleting..."
 
-  ***REMOVED*** Delete the kind cluster
+  # Delete the kind cluster
   kind delete cluster --name "$CLUSTER_NAME"
 
   echo "Kind cluster $CLUSTER_NAME deleted."
@@ -66,13 +66,13 @@ nodes:
     listenAddress: "0.0.0.0"
 EOF
 
-echo "***REMOVED*** Create a kubernetes secret containing the Root CA certificate and its key"
+echo "# Create a kubernetes secret containing the Root CA certificate and its key"
 kubectl create ns keycloak
 kubectl create secret tls -n keycloak ca-key-pair \
   --cert=.ssl/root-ca.pem \
   --key=.ssl/root-ca-key.pem
 
-echo "***REMOVED*** Install ingress controller"
+echo "# Install ingress controller"
 helm upgrade --install ingress-nginx ingress-nginx \
    --repo https://kubernetes.github.io/ingress-nginx \
    -n ingress --create-namespace \
@@ -80,7 +80,7 @@ helm upgrade --install ingress-nginx ingress-nginx \
    --set controller.hostPort.enabled=true \
    --set controller.watchIngressWithoutClass=true
 
-echo "***REMOVED*** Deploy the certificate manager"
+echo "# Deploy the certificate manager"
 helm repo add jetstack https://charts.jetstack.io
 helm install \
   cert-manager jetstack/cert-manager \
@@ -88,7 +88,7 @@ helm install \
   --create-namespace \
   --set installCRDs=true
 
-echo "***REMOVED*** Create an Issuer where you specify the secret: ca-key-pair"
+echo "# Create an Issuer where you specify the secret: ca-key-pair"
 kubectl delete issuer/ca-issuer -n keycloak | true
 cat <<EOF | kubectl apply -f -
 ---
@@ -102,7 +102,7 @@ spec:
     secretName: ca-key-pair
 EOF
 
-echo "***REMOVED*** Install and configure keycloak"
+echo "# Install and configure keycloak"
 helm upgrade --install --wait --timeout 15m \
   --namespace keycloak --create-namespace \
   --repo https://charts.bitnami.com/bitnami keycloak keycloak \
@@ -113,7 +113,7 @@ auth:
   adminPassword: admin
   managementUser: manager
   managementPassword: manager
-proxy: edge ***REMOVED*** Needed to avoid https -> http redirect
+proxy: edge # Needed to avoid https -> http redirect
 ingress:
   enabled: true
   annotations:
@@ -141,7 +141,7 @@ terraform {
     }
   }
 }
-***REMOVED*** configure keycloak provider
+# configure keycloak provider
 provider "keycloak" {
   client_id                = "admin-cli"
   username                 = "admin"
@@ -157,13 +157,13 @@ locals {
     user-admin = ["kube-admin"]
   }
 }
-***REMOVED*** create groups
+# create groups
 resource "keycloak_group" "groups" {
   for_each = toset(local.groups)
   realm_id = local.realm_id
   name     = each.key
 }
-***REMOVED*** create users
+# create users
 resource "keycloak_user" "users" {
   for_each       = local.user_groups
   realm_id       = local.realm_id
@@ -177,14 +177,14 @@ resource "keycloak_user" "users" {
     value = each.key
   }
 }
-***REMOVED*** configure use groups membership
+# configure use groups membership
 resource "keycloak_user_groups" "user_groups" {
   for_each  = local.user_groups
   realm_id  = local.realm_id
   user_id   = keycloak_user.users[each.key].id
   group_ids = [for g in each.value : keycloak_group.groups[g].id]
 }
-***REMOVED*** create groups openid client scope
+# create groups openid client scope
 resource "keycloak_openid_client_scope" "groups" {
   realm_id               = local.realm_id
   name                   = "groups"
@@ -198,7 +198,7 @@ resource "keycloak_openid_group_membership_protocol_mapper" "groups" {
   claim_name      = "groups"
   full_path       = false
 }
-***REMOVED*** create kube openid client
+# create kube openid client
 resource "keycloak_openid_client" "kube" {
   realm_id                     = local.realm_id
   client_id                    = "kube"
@@ -210,7 +210,7 @@ resource "keycloak_openid_client" "kube" {
   implicit_flow_enabled        = false
   direct_access_grants_enabled = true
 }
-***REMOVED*** configure kube openid client default scopes
+# configure kube openid client default scopes
 resource "keycloak_openid_client_default_scopes" "kube" {
   realm_id  = local.realm_id
   client_id = keycloak_openid_client.kube.id
@@ -222,10 +222,10 @@ resource "keycloak_openid_client_default_scopes" "kube" {
 EOF
 sed -i.bak "s/KEYCLOAK_HOSTNAME/$KEYCLOAK_HOSTNAME/g" keycloak.tf
 
-echo "***REMOVED*** Apply the terraform config"
+echo "# Apply the terraform config"
 terraform init && terraform apply -auto-approve
 
-echo "***REMOVED*** Create 2 ClusterRole; one for the group: kube-admin and a second for kube-dev having different RBAC: Cluster and edit"
+echo "# Create 2 ClusterRole; one for the group: kube-admin and a second for kube-dev having different RBAC: Cluster and edit"
 kubectl apply -f - <<EOF
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
@@ -254,7 +254,7 @@ roleRef:
   name: edit
 EOF
 
-echo "***REMOVED*** Get the keycloak tls certificate from the secret created by the certificate manager"
+echo "# Get the keycloak tls certificate from the secret created by the certificate manager"
 NAMESPACE=${NAMESPACE:=keycloak}
 SECRET_NAME=${SECRET_NAME:=keycloak.127.0.0.1.nip.io-tls}
 CA_FILE=${CA_FILE:=tls.crt}
@@ -262,7 +262,7 @@ CA_FILE=${CA_FILE:=tls.crt}
 kubectl get secret/${SECRET_NAME} -n ${NAMESPACE} -o json | jq -r --arg CERT_NAME "$CA_FILE" '.data[$CERT_NAME] | @base64d' > ${TEMP_SSL_DIR}/${CA_FILE}
 kubectl get secret/${SECRET_NAME} -n ${NAMESPACE} -o json | jq -r --arg CERT_NAME "$CA_FILE" '.data[$CERT_NAME] | @base64d' | openssl x509 -noout -text > ${TEMP_SSL_DIR}/${CA_FILE}.txt
 
-echo "***REMOVED*** Create a bash script able to set the kube config OIDC credentials for a user"
+echo "# Create a bash script able to set the kube config OIDC credentials for a user"
 cat <<'EOF' > kube-config-credentials.sh
 ISSUER=https://KEYCLOAK_HOSTNAME/realms/master
 ENDPOINT=$ISSUER/protocol/openid-connect/token
@@ -300,11 +300,11 @@ EOF
 sed -i.bak "s/KEYCLOAK_HOSTNAME/$KEYCLOAK_HOSTNAME/g" kube-config-credentials.sh
 chmod +x kube-config-credentials.sh
 
-echo "***REMOVED*** Configure within the kubectl config for a user the OIDC auth_provider"
+echo "# Configure within the kubectl config for a user the OIDC auth_provider"
 ./kube-config-credentials.sh user-admin
 ./kube-config-credentials.sh user-dev
 
-echo "***REMOVED*** Test it"
+echo "# Test it"
 kubectl config use-context user-dev
 kubectl create ns test | true
 
